@@ -56,7 +56,9 @@ Example:
   "saturation": 1.5
 }
 ```
-##🧠 Why Use This?
+---
+
+## 🧠 Why Use This?
 Identify loot imbalance before it affects gameplay
 
 Tune nominal values and lootmax settings with confidence
@@ -65,7 +67,9 @@ Catch broken or misconfigured mods early
 
 Improve loot diversity and distribution across your map
 
-##🛠️ Built With
+---
+
+## 🛠️ Built With
 Python 3.8+
 
 PyInstaller (for executable packaging)
