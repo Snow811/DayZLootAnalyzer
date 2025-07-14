@@ -35,15 +35,22 @@ def main():
 
     print("🔍 Parsing types.xml files...")
     types_data = parse_types_folder(types_path)
+    print(f"📦 Loaded {len(types_data)} items from types.xml.")
 
     print("🔍 Parsing proto.xml...")
     proto_data = parse_proto_folder(proto_path)
+    print(f"📦 Loaded {len(proto_data)} containers from proto.xml.")
 
     print("🔍 Parsing mapgrouppos.xml...")
     map_positions = parse_mapgrouppos_folder(mapgrouppos_path)
+    print(f"📦 Loaded {len(map_positions)} placements from mapgrouppos.xml.")
 
     print("📊 Analyzing loot economy...")
     report = analyze_loot_economy(types_data, proto_data, map_positions)
+
+    print("📊 Final usage zones:")
+    for usage, data in report['bias_by_usage'].items():
+        print(f"   → {usage}: {data['nominal']} nominal, {data['spawn_slots']} slots, saturation {data['saturation']}")
 
     print("💾 Saving report...")
     report_file = save_report_json(report, output_path)
