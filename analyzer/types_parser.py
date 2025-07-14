@@ -17,7 +17,7 @@ def parse_types_folder(folder_path):
     return loot_items
 
 def parse_types_file(file_path):
-    tree = ET.parse(file_path)  # Strict parsing — no wrapping
+    tree = ET.parse(file_path)
     root = tree.getroot()
     items = []
 
@@ -27,7 +27,8 @@ def parse_types_file(file_path):
             'nominal': int(get_text(type_elem, 'nominal', default='0')),
             'category': get_attr(type_elem.find('category'), 'name'),
             'usage': [u.get('name') for u in type_elem.findall('usage')],
-            'value': [v.get('name') for v in type_elem.findall('value')]
+            'value': [v.get('name') for v in type_elem.findall('value')],
+            'tag': [t.get('name').lower().strip() for t in type_elem.findall('tag') if t.get('name')]
         }
         items.append(item)
 
