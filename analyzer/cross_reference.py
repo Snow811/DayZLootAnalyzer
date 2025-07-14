@@ -30,7 +30,13 @@ def analyze_loot_economy(types_data, proto_data, map_positions):
     loot_by_usage = defaultdict(lambda: {'nominal': 0})
     for item in types_data:
         nominal = item['nominal']
-        for usage in item['usage']:
+        usages = [u for u in item['usage'] if u]
+
+        # Fallback to tags if usage is missing or empty
+        if not usages:
+            usages = item['tag']
+
+        for usage in usages:
             normalized_usage = usage.lower().strip() if usage else None
             if normalized_usage:
                 loot_by_usage[normalized_usage]['nominal'] += nominal
