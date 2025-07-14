@@ -22,7 +22,7 @@ def parse_proto_file(file_path):
             container_name = container.get('name')
             container_lootmax = int(container.get('lootmax', 0))
             categories = [c.get('name') for c in container.findall('category')]
-            tags = [t.get('name') for t in container.findall('tag')]
+            tags = [t.get('name') for t in container.findall('tag') if t.get('name')]
             points = container.findall('point')
 
             loot_containers.append({
