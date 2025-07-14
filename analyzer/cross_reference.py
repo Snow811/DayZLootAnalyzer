@@ -1,24 +1,27 @@
 from collections import defaultdict
 
 def analyze_loot_economy(types_data, proto_data, map_positions):
-    # Count how many times each building group is placed
+    # Normalize and count how many times each building group is placed
     group_counts = defaultdict(int)
     for entry in map_positions:
-        group_counts[entry['name']] += 1
+        normalized_name = entry['name'].lower().strip()
+        group_counts[normalized_name] += 1
 
-    # Build spawn capacity map by usage
+    # Build spawn capacity map by usage (or tag fallback)
     spawn_capacity = defaultdict(lambda: {'slots': 0, 'groups': 0})
 
-    # Track group-level spawn slots
     for container in proto_data:
-        group_name = container['group']
+        group_name = container['group'].lower().strip()
         group_lootmax = container['group_lootmax']
-        usages = container['usages']
+        usages = [u.lower().strip() for u in container['usages'] if u]
+
+        # Fallback to tags if usages are missing
+        if not usages:
+            usages = [t.lower().strip() for t in container['tags'] if t]
 
         placement_count = group_counts.get(group_name, 0)
         total_group_slots = group_lootmax * placement_count
 
-        # Assign total group slots to each usage
         for usage in usages:
             spawn_capacity[usage]['slots'] += total_group_slots
             spawn_capacity[usage]['groups'] += placement_count
@@ -28,7 +31,9 @@ def analyze_loot_economy(types_data, proto_data, map_positions):
     for item in types_data:
         nominal = item['nominal']
         for usage in item['usage']:
-            loot_by_usage[usage]['nominal'] += nominal
+            normalized_usage = usage.lower().strip() if usage else None
+            if normalized_usage:
+                loot_by_usage[normalized_usage]['nominal'] += nominal
 
     # Build final report
     report = {
@@ -47,7 +52,6 @@ def analyze_loot_economy(types_data, proto_data, map_positions):
             'saturation': saturation
         }
 
-    # Flag under/over represented usage zones
     report['flags'] = {
         'underrepresented': [u for u, d in report['bias_by_usage'].items() if d['saturation'] < 0.5],
         'overrepresented': [u for u, d in report['bias_by_usage'].items() if d['saturation'] > 2.0]
